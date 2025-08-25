@@ -16,16 +16,19 @@ export const registerUser = async (req, res) => {
     user = new User({
       name,
       email,
-      password: hashedPassword
+      passwordHash: hashedPassword   // 👈 yaha passwordHash hona chahiye
     });
 
     await user.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
@@ -39,14 +42,17 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User does not exist" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.passwordHash); // 👈 yaha bhi passwordHash
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({
+      token,
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
@@ -55,7 +61,7 @@ export const loginUser = async (req, res) => {
 // Get user (protected)
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("-passwordHash"); // 👈 passwordHash hide karna
     res.json(user);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });

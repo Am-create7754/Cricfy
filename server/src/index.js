@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const authRoutes = require("./routes/user");
+const authRoutes = require("./routes/userRoutes");
 const stadiumRoutes = require("./routes/stadiumRoutes");
 const matchRoutes = require("./routes/matchroutes");
 const bookingRoutes = require("./routes/bookingRoutes");

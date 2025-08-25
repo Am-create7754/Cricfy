@@ -2,6 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import authRoutes from "./src/routes/authRoutes.js";
+import stadiumRoutes from "./src/routes/stadiumRoutes.js";
+import matchRoutes from "./src/routes/matchroutes.js";
+import bookingRoutes from "./src/routes/bookingRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -9,12 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/auth", authRoutes);   // ✅ yaha path define hai
-app.use("/auth", require("./src/routes/authRoutes"));
-app.use("/stadiums", require("./src/routes/stadiumRoutes"));
-app.use("/matches", require("./src/routes/matchRoutes"));
-app.use("/bookings", require("./src/routes/bookingRoutes"));
-
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/stadiums", stadiumRoutes);
+app.use("/api/matches", matchRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
